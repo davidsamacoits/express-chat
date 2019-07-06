@@ -6,7 +6,11 @@ const port = 3000;
 
 io.on('connection', (socket) => {
   console.log('a user connected');
-
+  // Handeling messaging
+  socket.on('chat message', (msg) => {
+    console.log('message: ' + msg);
+  });
+  // Handeling disconnection
   socket.on('disconnect', () => {
     console.log('user disconnected')
   })

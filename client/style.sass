@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900&display=swap')
+@import "./node_modules/material-design-icons/iconfont/material-icons.css"
+
+$main-margin: 30px
+$main-padding: 15px
+$msg-padding: 15px 20px
+$msg-margin: 12px
+$blue: #008bf7
+$blue-dimmed: #0074ce
+$grey: #ebe9f1
+$grey-light: #ececec
+$radius: 25px
+$input-padding: 20px 15px
+
+*
+  &:focus, &:active
+    outline: none
+    border: 0
+
+html, body
+  margin: 0
+  padding: 0
+  background: url('assets/background.jpg')
+  font-family: 'Catamaran', sans-serif
+  font-size: 16px
+  height: 100%
+  #root
+    display: flex
+    flex-direction: row
+    height: 100%
+    h1
+      font-size: 2rem
+      font-weight: 400
+      line-height: 1
+      .accent
+        font-weight: 800
+        display: block
+    aside
+      background: rgba(249, 248, 253, 0.6)
+      width: 300px
+      padding: $main-padding
+      display: flex
+      flex-direction: column
+      justify-content: space-between
+      .credits
+        font-weight: 0.45rem
+        opacity: 0.65
+    main
+      background: rgba(249, 248, 253, 0.9)
+      flex: 1
+      display: flex
+      flex-direction: column
+      padding: $main-margin
+      header
+        margin: 0
+        padding: 0
+        padding-bottom: $main-padding
+        font-size: 1.5rem
+        font-weight: 700
+        border-bottom: 1px solid #0000000f
+      .msg-container
+        flex: 1
+        display: flex
+        flex-direction: column
+        overflow-y: scroll
+        padding: $main-padding 0
+        .msg
+          background: $grey
+          color: black
+          padding: $msg-padding
+          border-radius: $radius
+          margin-bottom: $msg-margin
+          width: auto
+          align-self: flex-start
+          max-width: 80%
+          word-wrap: break-word
+          font-weight: 400
+          font-size: 0.95rem
+          line-height: 1.45
+          &.me
+            background: $blue
+            color: white
+            align-self: flex-end
+      .input-container
+        background-color: white
+        box-shadow: 0 2px 2px 1px #00000006
+        border-radius: 3px
+        overflow: hidden
+        form
+          display: flex
+          align-items: center
+          input
+            border: none
+            flex: 1
+            padding: $input-padding
+            color: black
+            font-size: 0.9rem
+            font-weight: 400
+            &::placeholder
+              color: black
+              opacity: 0.2
+              font-weight: 500
+          .btn-send
+            background-color: $blue
+            color: white
+            width: 40px
+            height: 40px
+            margin: 0 $msg-margin
+            display: flex
+            border: none
+            border-radius: 50%
+            justify-content: center
+            align-items: center
+            box-shadow: 0 2px 6px 2px #00477d30
+            transition: all 250ms
+            &:hover
+              cursor: pointer
+            &:enabled:active
+              background-color: $blue-dimmed
+              box-shadow: 0 2px 6px 2px #00477d4a
+              transform: translate(0, 1px)
+            &:disabled
+              opacity: 0.45
+            i.material-icons
+              margin-left: 3px
+              transform: rotate(-25deg)
+              margin-top: -1px
+
+@media ( max-width: 768px )
+  html, body
+    #root
+      aside
+        display: none
