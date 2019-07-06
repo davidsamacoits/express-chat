@@ -1,0 +1,8 @@
+{
+  "name": "chat-server",
+  "version": "0.0.1",
+  "description": "Chat server",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
