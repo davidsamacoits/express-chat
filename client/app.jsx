@@ -1,20 +1,44 @@
 import React, { useEffect, useState, Fragment } from "react";
 import ReactDOM from "react-dom";
-import socketIOClient from "socket.io-client";
+import io from "socket.io-client";
 
 import "./style.sass";
 import { SERVER_ENDPOINT } from "./config";
+import { CONNECTION_STATUS, SOCKET_EVENTS } from "./constants";
 
 const App = () => {
   const [currentMessage, setCurrentMessage] = useState("");
-  let socket;
+  const [socket, setSocket] = useState(null);
+  const [connectionStatus, setConnectionStatus] = useState(
+    CONNECTION_STATUS.OFFLINE
+  );
+
   useEffect(() => {
     // Initializing socket
-    socket = socketIOClient(SERVER_ENDPOINT);
-    // socket.on("change color", col => {
-    //   document.body.style.backgroundColor = col;
-    // });
-  });
+    _connectSocket();
+  }, []);
+
+  function _connectSocket() {
+    const socketClient = io(SERVER_ENDPOINT);
+    socketClient.on(SOCKET_EVENTS.CONNECT, () => {
+      setConnectionStatus(CONNECTION_STATUS.ONLINE);
+      console.log("Connected");
+    });
+    socketClient.on(SOCKET_EVENTS.DISCONNECT, () => {
+      setConnectionStatus(CONNECTION_STATUS.OFFLINE);
+      console.log("Disconnected");
+    });
+    socketClient.on(SOCKET_EVENTS.CONNECT_ERROR, () => {
+      setConnectionStatus(CONNECTION_STATUS.OFFLINE);
+      console.log("Connection error");
+    });
+    socketClient.on(SOCKET_EVENTS.CONNECT_FAILED, () => {
+      setConnectionStatus(CONNECTION_STATUS.OFFLINE);
+      console.log("Connection failed");
+    });
+    socketClient.open();
+    setSocket(socketClient);
+  }
 
   function _isSendBtnDisabled() {
     return !currentMessage.length ? true : false;
@@ -25,8 +49,7 @@ const App = () => {
   }
 
   function _handleSubmit() {
-    console.log("Message: " + currentMessage);
-    socket.emit("chat message", currentMessage);
+    socket.emit(SOCKET_EVENTS.CHAT_MESSAGE, currentMessage);
     setCurrentMessage("");
     event.preventDefault();
   }
