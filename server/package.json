@@ -1,7 +1,10 @@
 {
   "name": "chat-server",
   "version": "0.0.1",
+  "author": "David Samacoïts-Etchegoin",
+  "license": "ISC",
   "description": "Chat server",
+  "main": "index.js",
   "dependencies": {
     "express": "^4.17.1"
   }
