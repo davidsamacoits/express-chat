@@ -1,0 +1,9 @@
+{
+  "name": "chat-client",
+  "version": "0.0.1",
+  "author": "David Samacoïts-Etchegoin",
+  "license": "ISC",
+  "description": "Chat client",
+  "main": "index.js",
+  "dependencies": {}
+}
