@@ -4,14 +4,18 @@ import io from "socket.io-client";
 
 import "./style.sass";
 import { SERVER_ENDPOINT } from "./config";
-import { CONNECTION_STATUS, SOCKET_EVENTS } from "./constants";
+import { CONNECTION_STATUS, SOCKET_EVENTS, EMOJIS } from "./constants";
 
 const App = () => {
   const [currentMessage, setCurrentMessage] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [uuid, setUuid] = useState("");
   const [socket, setSocket] = useState(null);
   const [connectionStatus, setConnectionStatus] = useState(
     CONNECTION_STATUS.OFFLINE
   );
+  const [messages, setMessages] = useState([]);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     // Initializing socket
@@ -20,10 +24,15 @@ const App = () => {
 
   function _connectSocket() {
     const socketClient = io(SERVER_ENDPOINT);
-    socketClient.on(SOCKET_EVENTS.CONNECT, () => {
-      setConnectionStatus(CONNECTION_STATUS.ONLINE);
-      console.log("Connected");
+
+    // Connection is established
+    socketClient.on(SOCKET_EVENTS.CONNECTION_SUCCESS, ({ users, messages }) => {
+      // Initializing messages and users
+      setMessages(messages);
+      setUsers(users);
     });
+
+    // Handling errors
     socketClient.on(SOCKET_EVENTS.DISCONNECT, () => {
       setConnectionStatus(CONNECTION_STATUS.OFFLINE);
       console.log("Disconnected");
@@ -36,7 +45,23 @@ const App = () => {
       setConnectionStatus(CONNECTION_STATUS.OFFLINE);
       console.log("Connection failed");
     });
+
+    // User is ready to chat and has a nickname
+    socketClient.on(SOCKET_EVENTS.CHAT_WELCOME, newUser => {
+      setConnectionStatus(CONNECTION_STATUS.ONLINE);
+      console.log("Connection success", newUser);
+      setUuid(newUser.uuid);
+    });
+
+    //
+    socketClient.on(SOCKET_EVENTS.CHAT_MESSAGE, messages => {
+      console.log("Messages received", messages);
+      setMessages(messages);
+    });
+
     socketClient.open();
+
+    //
     setSocket(socketClient);
   }
 
@@ -48,34 +73,77 @@ const App = () => {
     setCurrentMessage(event.target.value);
   }
 
-  function _handleSubmit() {
-    socket.emit(SOCKET_EVENTS.CHAT_MESSAGE, currentMessage);
+  function _handleOnChangeNickname(event) {
+    setNickname(event.target.value);
+  }
+
+  function _handleSubmitMessage() {
+    socket.emit(SOCKET_EVENTS.CHAT_MESSAGE, {
+      from: {
+        uuid,
+        nickname
+      },
+      content: currentMessage
+    });
     setCurrentMessage("");
     event.preventDefault();
   }
 
-  function _rendermessages() {
-    return (
-      <Fragment>
-        <div className="msg">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam
-          ultrices, leo vitae auctor malesuada, leo leo elementum nisl, sit amet
-          tincidunt metus nibh quis nisl.
-        </div>
-        <div className="msg me">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam
-          ultrices, leo vitae auctor malesuada, leo leo elementum nisl, sit amet
-          tincidunt metus nibh quis nisl.
-        </div>
-        <div className="msg me">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. 🏈
-        </div>
-      </Fragment>
-    );
+  function _handleSubmitNickname() {
+    const augmentedNickname = `${nickname} ${
+      EMOJIS[Math.floor(Math.random() * EMOJIS.length)]
+    }`;
+    setNickname(augmentedNickname);
+    socket.emit(SOCKET_EVENTS.CHAT_ENTER, augmentedNickname);
+    event.preventDefault();
   }
+
+  function _rendermessages() {
+    return messages.map(msg => {
+      const augmentedClasses =
+        msg.from.uuid === uuid ? "msg-container me" : "msg-container";
+      return (
+        <div className={augmentedClasses}>
+          {msg.from.uuid !== uuid && (
+            <div className="msg-sender">{msg.from.nickname}</div>
+          )}
+          <div key={msg.uuid} className="msg">
+            {msg.content}
+          </div>
+        </div>
+      );
+    });
+  }
+
+  //       <div className="msg me">
+  //         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam
+  //         ultrices, leo vitae auctor malesuada, leo leo elementum nisl, sit amet
+  //         tincidunt metus nibh quis nisl.
+  //       </div>
+  //       <div className="msg me">
+  //         Lorem ipsum dolor sit amet, consectetur adipiscing elit. 🏈
+  //       </div>
+  //   );
+  // }
 
   return (
     <Fragment>
+      {!uuid && (
+        <div className="welcome-modal">
+          <div className="welcome-container">
+            <h2>Welcome stranger! 👋</h2>
+            <p>Tell us who you are and start chatting with other people 🔥</p>
+            <form onSubmit={_handleSubmitNickname}>
+              <input
+                type="text"
+                placeholder="What's your name?"
+                value={nickname}
+                onChange={_handleOnChangeNickname}
+              />
+            </form>
+          </div>
+        </div>
+      )}
       <aside>
         <div className="brand">
           <h1>
@@ -87,9 +155,9 @@ const App = () => {
       </aside>
       <main>
         <header>David 🐨</header>
-        <div className="msg-container">{_rendermessages()}</div>
+        <div className="msg-feed">{_rendermessages()}</div>
         <div className="input-container">
-          <form onSubmit={_handleSubmit}>
+          <form onSubmit={_handleSubmitMessage}>
             <input
               type="text"
               placeholder="Type a message..."
