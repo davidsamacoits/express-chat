@@ -5,5 +5,11 @@
   "license": "ISC",
   "description": "Chat client",
   "main": "index.js",
-  "dependencies": {}
+  "dependencies": {
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.3"
+  }
 }
