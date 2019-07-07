@@ -83,7 +83,7 @@ const App = () => {
         uuid,
         nickname
       },
-      content: currentMessage
+      content: currentMessage.trim()
     });
     setCurrentMessage("");
     event.preventDefault();
@@ -99,51 +99,56 @@ const App = () => {
   }
 
   function _rendermessages() {
+    let previousSender = "";
     return messages.map(msg => {
       const augmentedClasses =
         msg.from.uuid === uuid ? "msg-container me" : "msg-container";
+      const senderIsDifferent = previousSender !== msg.from.uuid;
+      previousSender = msg.from.uuid;
       return (
-        <div className={augmentedClasses}>
-          {msg.from.uuid !== uuid && (
+        <div className={augmentedClasses} key={msg.uuid}>
+          {msg.from.uuid !== uuid && senderIsDifferent && (
             <div className="msg-sender">{msg.from.nickname}</div>
           )}
-          <div key={msg.uuid} className="msg">
-            {msg.content}
-          </div>
+          <div className="msg">{msg.content}</div>
         </div>
       );
     });
   }
 
-  //       <div className="msg me">
-  //         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam
-  //         ultrices, leo vitae auctor malesuada, leo leo elementum nisl, sit amet
-  //         tincidunt metus nibh quis nisl.
-  //       </div>
-  //       <div className="msg me">
-  //         Lorem ipsum dolor sit amet, consectetur adipiscing elit. 🏈
-  //       </div>
-  //   );
-  // }
+  function _isWelcomeSubmitDisabled() {
+    return !nickname.length ? true : false;
+  }
+
+  function _renderWelcomeModal() {
+    return (
+      <div className="welcome-modal">
+        <div className="welcome-container">
+          <h2>Welcome stranger! 👋</h2>
+          <p>Tell us who you are and start chatting with other people 🔥</p>
+          <form onSubmit={_handleSubmitNickname} action="#">
+            <input
+              type="text"
+              placeholder="What's your name?"
+              value={nickname}
+              onChange={_handleOnChangeNickname}
+            />
+            <button
+              type="submit"
+              className="welcome-submit"
+              disabled={_isWelcomeSubmitDisabled()}
+            >
+              Enter chat
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Fragment>
-      {!uuid && (
-        <div className="welcome-modal">
-          <div className="welcome-container">
-            <h2>Welcome stranger! 👋</h2>
-            <p>Tell us who you are and start chatting with other people 🔥</p>
-            <form onSubmit={_handleSubmitNickname}>
-              <input
-                type="text"
-                placeholder="What's your name?"
-                value={nickname}
-                onChange={_handleOnChangeNickname}
-              />
-            </form>
-          </div>
-        </div>
-      )}
+      {!uuid && _renderWelcomeModal()}
       <aside>
         <div className="brand">
           <h1>
@@ -157,7 +162,7 @@ const App = () => {
         <header>David 🐨</header>
         <div className="msg-feed">{_rendermessages()}</div>
         <div className="input-container">
-          <form onSubmit={_handleSubmitMessage}>
+          <form onSubmit={_handleSubmitMessage} action="#">
             <input
               type="text"
               placeholder="Type a message..."

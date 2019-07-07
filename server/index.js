@@ -11,6 +11,7 @@ const users = [{
 }];
 
 const messages = [{
+  uuid: "1",
   from: {
     uuid: "000000000",
     nickname: 'Chatbot 🤖',
@@ -43,6 +44,8 @@ io.on('connection', (socket) => {
   // Handeling messaging
   socket.on('chat message', (newMsg) => {
     console.log('message: ' + newMsg);
+    const uuid = uuidv4();
+    newMsg.uuid = uuid;
     messages.push(newMsg);
     io.emit('chat message', messages);
   });
