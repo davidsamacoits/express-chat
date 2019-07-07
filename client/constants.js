@@ -19,4 +19,6 @@ export const SOCKET_EVENTS = {
   CHAT_IDLE: 'chat idle',
 };
 
+export const COOKIE_NAME = 'chatexpress_identity';
+
 export const EMOJIS = ["🐨", "🐻", "🐳", "🐷", "🐱", "🐶", "🐭", "🐥", "🐼", "⛄️", "💩", "🍪", "🎈", "🌵", "🏈"];

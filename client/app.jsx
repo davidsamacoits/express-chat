@@ -124,15 +124,17 @@ const App = () => {
   }
 
   function _handleSubmitMessage() {
-    socket.emit(SOCKET_EVENTS.CHAT_MESSAGE, {
-      from: {
-        uuid,
-        nickname
-      },
-      content: currentMessage.trim()
-    });
-    socket.emit(SOCKET_EVENTS.CHAT_STOP_TYPING);
-    setCurrentMessage("");
+    if (currentMessage.trim().length !== 0) {
+      socket.emit(SOCKET_EVENTS.CHAT_MESSAGE, {
+        from: {
+          uuid,
+          nickname
+        },
+        content: currentMessage.trim()
+      });
+      socket.emit(SOCKET_EVENTS.CHAT_STOP_TYPING);
+      setCurrentMessage("");
+    }
     event.preventDefault();
   }
 

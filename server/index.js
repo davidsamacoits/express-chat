@@ -56,6 +56,7 @@ io.on('connection', (socket) => {
 
   // Handeling disconnection
   socket.on('disconnect', () => {
+    // Clearing users
     console.log('user disconnected')
   })
 });
