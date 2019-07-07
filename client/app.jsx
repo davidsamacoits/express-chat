@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, useState, Fragment, useRef } from "react";
 import ReactDOM from "react-dom";
 import io from "socket.io-client";
 
@@ -7,6 +7,7 @@ import { SERVER_ENDPOINT } from "./config";
 import { CONNECTION_STATUS, SOCKET_EVENTS, EMOJIS } from "./constants";
 
 const App = () => {
+  const messagesEndRef = useRef(null);
   const [currentMessage, setCurrentMessage] = useState("");
   const [nickname, setNickname] = useState("");
   const [uuid, setUuid] = useState("");
@@ -21,6 +22,8 @@ const App = () => {
     // Initializing socket
     _connectSocket();
   }, []);
+
+  useEffect(_scrollToBottom, [messages]);
 
   function _connectSocket() {
     const socketClient = io(SERVER_ENDPOINT);
@@ -63,6 +66,10 @@ const App = () => {
 
     //
     setSocket(socketClient);
+  }
+
+  function _scrollToBottom() {
+    messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
   }
 
   function _isSendBtnDisabled() {
@@ -160,7 +167,10 @@ const App = () => {
       </aside>
       <main>
         <header>David 🐨</header>
-        <div className="msg-feed">{_rendermessages()}</div>
+        <div className="msg-feed">
+          {_rendermessages()}
+          <div ref={messagesEndRef} />
+        </div>
         <div className="input-container">
           <form onSubmit={_handleSubmitMessage} action="#">
             <input
