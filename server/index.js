@@ -5,19 +5,9 @@ const uuidv4 = require('uuid/v4');
 
 const port = 3000;
 
-const users = [{
-  uuid: "000000000",
-  nickname: 'Chatbot 🤖',
-}];
+const users = [];
 
-const messages = [{
-  uuid: "1",
-  from: {
-    uuid: "000000000",
-    nickname: 'Chatbot 🤖',
-  },
-  content: "Welcome! 🙌",
-}];
+const messages = [];
 
 io.on('connection', (socket) => {
   console.log('🔥 New connection');
@@ -29,7 +19,6 @@ io.on('connection', (socket) => {
 
   // Handeling a new user entering the chatroom
   socket.on('chat enter', nickname => {
-    console.log('new user: ' + nickname);
     // Building user entry
     const uuid = uuidv4();
     const newUser = {
@@ -37,17 +26,17 @@ io.on('connection', (socket) => {
       nickname,
     };
     users.push(newUser);
-    console.log(users);
     socket.emit('chat welcome', newUser);
+    io.emit('chat users', users);
   });
 
   // Handeling messaging
   socket.on('chat message', (newMsg) => {
-    console.log('message: ' + newMsg);
     const uuid = uuidv4();
     newMsg.uuid = uuid;
     messages.push(newMsg);
-    io.emit('chat message', messages);
+    // Broadcast new message
+    io.emit('chat message', newMsg);
   });
 
   // Handeling disconnection

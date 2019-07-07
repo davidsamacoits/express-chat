@@ -1,6 +1,6 @@
 export const CONNECTION_STATUS = {
-  ONLINE: 'ONLINE',
-  OFFLINE: 'OFFLINE',
+  ONLINE: 'Online',
+  OFFLINE: 'Offline',
 };
 
 export const SOCKET_EVENTS = {
@@ -12,6 +12,7 @@ export const SOCKET_EVENTS = {
   CHAT_MESSAGE: 'chat message',
   CHAT_ENTER: 'chat enter',
   CHAT_WELCOME: 'chat welcome',
+  CHAT_USERS: 'chat users',
 };
 
-export const EMOJIS = ["🐨", "🐻", "🐳", "🐷", "🐱", "🐶", "🐭", "🐥", "🐼", "⛄️"];
+export const EMOJIS = ["🐨", "🐻", "🐳", "🐷", "🐱", "🐶", "🐭", "🐥", "🐼", "⛄️", "💩", "🍪", "🎈", "🌵", "🏈"];

@@ -52,20 +52,45 @@ const App = () => {
     // User is ready to chat and has a nickname
     socketClient.on(SOCKET_EVENTS.CHAT_WELCOME, newUser => {
       setConnectionStatus(CONNECTION_STATUS.ONLINE);
-      console.log("Connection success", newUser);
       setUuid(newUser.uuid);
     });
 
-    //
-    socketClient.on(SOCKET_EVENTS.CHAT_MESSAGE, messages => {
-      console.log("Messages received", messages);
-      setMessages(messages);
+    // New user arrived, updating list
+    socketClient.on(SOCKET_EVENTS.CHAT_USERS, users => {
+      setUsers(users);
+    });
+
+    // Receiving a message
+    socketClient.on(SOCKET_EVENTS.CHAT_MESSAGE, newMsg => {
+      setMessages(messages => messages.concat(newMsg));
     });
 
     socketClient.open();
-
-    //
     setSocket(socketClient);
+  }
+
+  function _renderConnectionStatus() {
+    return (
+      <Fragment>
+        <p className="server-title">📡 Server status</p>
+        <code className="server-url">{SERVER_ENDPOINT}</code>
+        <p className="server-status">
+          <span className={connectionStatus.toLowerCase()} />
+          {connectionStatus}
+        </p>
+      </Fragment>
+    );
+  }
+
+  function _renderUsersList() {
+    const usersLength = users.length;
+    return users.map((user, i) => {
+      if (usersLength === i + 1) {
+        return user.nickname;
+      } else {
+        return `${user.nickname}, `;
+      }
+    });
   }
 
   function _scrollToBottom() {
@@ -162,11 +187,12 @@ const App = () => {
             Chat
             <span className="accent">Express</span>
           </h1>
+          {_renderConnectionStatus()}
         </div>
         <div className="credits">by David Samacoïts-Etchegoin</div>
       </aside>
       <main>
-        <header>David 🐨</header>
+        <header>{_renderUsersList()}</header>
         <div className="msg-feed">
           {_rendermessages()}
           <div ref={messagesEndRef} />
