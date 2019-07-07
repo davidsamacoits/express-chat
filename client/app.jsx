@@ -17,13 +17,14 @@ const App = () => {
   );
   const [messages, setMessages] = useState([]);
   const [users, setUsers] = useState([]);
+  const [typing, setTyping] = useState(false);
 
   useEffect(() => {
     // Initializing socket
     _connectSocket();
   }, []);
 
-  useEffect(_scrollToBottom, [messages]);
+  useEffect(_scrollToBottom, [messages, typing]);
 
   function _connectSocket() {
     const socketClient = io(SERVER_ENDPOINT);
@@ -65,6 +66,14 @@ const App = () => {
       setMessages(messages => messages.concat(newMsg));
     });
 
+    // Handeling typing
+    socketClient.on(SOCKET_EVENTS.CHAT_TYPING, () => {
+      setTyping(true);
+    });
+    socketClient.on(SOCKET_EVENTS.CHAT_IDLE, () => {
+      setTyping(false);
+    });
+
     socketClient.open();
     setSocket(socketClient);
   }
@@ -102,6 +111,11 @@ const App = () => {
   }
 
   function _handleOnChangeMessage(event) {
+    if (event.target.value === "") {
+      socket.emit(SOCKET_EVENTS.CHAT_STOP_TYPING);
+    } else {
+      socket.emit(SOCKET_EVENTS.CHAT_IS_TYPING);
+    }
     setCurrentMessage(event.target.value);
   }
 
@@ -117,6 +131,7 @@ const App = () => {
       },
       content: currentMessage.trim()
     });
+    socket.emit(SOCKET_EVENTS.CHAT_STOP_TYPING);
     setCurrentMessage("");
     event.preventDefault();
   }
@@ -146,6 +161,68 @@ const App = () => {
         </div>
       );
     });
+  }
+
+  function _renderIsTyping() {
+    return (
+      <div className="msg-container">
+        <div className="msg">
+          <svg width="20px" height="6px" viewBox="0 0 128 32">
+            <circle
+              fill="#494e58"
+              fillOpacity="1"
+              cx="0"
+              cy="0"
+              r="11"
+              transform="translate(16 16)"
+            >
+              <animateTransform
+                attributeName="transform"
+                type="scale"
+                additive="sum"
+                values="1;1.42;1;1;1;1;1;1;1;1"
+                dur="1050ms"
+                repeatCount="indefinite"
+              />
+            </circle>
+            <circle
+              fill="#494e58"
+              fillOpacity="1"
+              cx="0"
+              cy="0"
+              r="11"
+              transform="translate(64 16)"
+            >
+              <animateTransform
+                attributeName="transform"
+                type="scale"
+                additive="sum"
+                values="1;1;1;1;1.42;1;1;1;1;1"
+                dur="1050ms"
+                repeatCount="indefinite"
+              />
+            </circle>
+            <circle
+              fill="#494e58"
+              fillOpacity="1"
+              cx="0"
+              cy="0"
+              r="11"
+              transform="translate(112 16)"
+            >
+              <animateTransform
+                attributeName="transform"
+                type="scale"
+                additive="sum"
+                values="1;1;1;1;1;1;1;1.42;1;1"
+                dur="1050ms"
+                repeatCount="indefinite"
+              />
+            </circle>
+          </svg>
+        </div>
+      </div>
+    );
   }
 
   function _isWelcomeSubmitDisabled() {
@@ -195,6 +272,7 @@ const App = () => {
         <header>{_renderUsersList()}</header>
         <div className="msg-feed">
           {_rendermessages()}
+          {typing && _renderIsTyping()}
           <div ref={messagesEndRef} />
         </div>
         <div className="input-container">

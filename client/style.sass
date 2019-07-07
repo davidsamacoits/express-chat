@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900&display=swap')
 @import "./node_modules/material-design-icons/iconfont/material-icons.css"
+@import url('https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900&display=swap')
 
 $blue: #008bf7
 $blue-dimmed: #0074ce
@@ -85,9 +85,10 @@ html, body
               transform: translate(0, 1px)
             &:disabled
               opacity: 0.45
+              cursor: not-allowed
     aside
       background: rgba(249, 248, 253, 0.6)
-      width: 300px
+      width: 325px
       padding: 15px
       display: flex
       flex-direction: column
@@ -149,12 +150,12 @@ html, body
           .msg-sender
             font-size: 0.85rem
             font-weight: 500
-            margin: 5px 0 5px 15px
+            margin: 5px 0 5px 12px
             opacity: 0.5
           .msg
             background: $grey
             color: $dark-blue
-            padding: 10px 20px
+            padding: 8px 18px
             border-radius: 25px
             font-weight: 400
             font-size: 0.95rem
@@ -204,6 +205,7 @@ html, body
               transform: translate(0, 1px)
             &:disabled
               opacity: 0.45
+              cursor: not-allowed
             i.material-icons
               margin-left: 3px
               transform: rotate(-25deg)

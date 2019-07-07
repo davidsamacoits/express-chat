@@ -6,8 +6,8 @@ const uuidv4 = require('uuid/v4');
 const port = 3000;
 
 const users = [];
-
 const messages = [];
+let isTyping = false;
 
 io.on('connection', (socket) => {
   console.log('🔥 New connection');
@@ -29,6 +29,21 @@ io.on('connection', (socket) => {
     socket.emit('chat welcome', newUser);
     io.emit('chat users', users);
   });
+
+  // Handeling typing
+  socket.on('chat istyping', () => {
+    if (isTyping === false) {
+      isTyping = true;
+      socket.broadcast.emit('chat typing');
+    }
+  })
+
+  socket.on('chat stoptyping', () => {
+    if (isTyping === true) {
+      isTyping = false;
+      socket.broadcast.emit('chat idle');
+    }
+  })
 
   // Handeling messaging
   socket.on('chat message', (newMsg) => {

@@ -13,6 +13,10 @@ export const SOCKET_EVENTS = {
   CHAT_ENTER: 'chat enter',
   CHAT_WELCOME: 'chat welcome',
   CHAT_USERS: 'chat users',
+  CHAT_IS_TYPING: 'chat istyping',
+  CHAT_STOP_TYPING: 'chat stoptyping',
+  CHAT_TYPING: 'chat typing',
+  CHAT_IDLE: 'chat idle',
 };
 
 export const EMOJIS = ["🐨", "🐻", "🐳", "🐷", "🐱", "🐶", "🐭", "🐥", "🐼", "⛄️", "💩", "🍪", "🎈", "🌵", "🏈"];
